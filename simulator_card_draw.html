@@ -377,7 +377,7 @@
                 currentCard = allCards[randomIndex];
 
                 // 카드 이미지 업데이트
-                cardFront.style.backgroundImage = `url('${currentCard.src}')`;
+                cardFront.style.backgroundImage = `url('./${currentCard.src}')`;
 
                 // 카드 정보 표시
                 cardLabel.textContent = currentCard.label;
@@ -402,7 +402,7 @@
         drawBtn.addEventListener('click', drawCard);
 
         // 초기 카드 설정
-        cardFront.style.backgroundImage = `url('output/action_0.png')`;
+        cardFront.style.backgroundImage = `url('./output/action_0.png')`;
 
         // 화면 크기 변경 시 스케일 조정
         window.addEventListener('resize', scaleCardToFit);
