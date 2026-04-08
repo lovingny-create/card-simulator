@@ -136,7 +136,7 @@
         }
 
         .card-front {
-            background-image: url('output/action_0.png');
+            background-image: url('./output/action_0.png');
             background-size: cover;
             background-position: center;
             transform: rotateY(180deg);
@@ -230,7 +230,6 @@
             }
         }
 
-        /* 모바일/태블릿 최적화 */
         @media (max-width: 768px) {
             body {
                 gap: 15px;
@@ -251,7 +250,6 @@
             }
         }
 
-        /* 초소형 화면 */
         @media (max-height: 600px) {
             .header {
                 display: none;
@@ -260,15 +258,6 @@
             body {
                 gap: 10px;
             }
-        }
-
-        /* 반응형 카드 스케일 */
-        .card-container.portrait {
-            /* 세로 모드 */
-        }
-
-        .card-container.landscape {
-            max-height: 600px;
         }
     </style>
 </head>
@@ -311,13 +300,13 @@
                 id: `action_${i}`,
                 type: 'action',
                 label: `액션 카드 ${i + 1}`,
-                src: `output/action_${i}.png`
+                src: `./output/action_${i}.png`
             })),
             wood: Array.from({ length: 13 }, (_, i) => ({
                 id: `wood_${i + 1}`,
                 type: 'wood',
                 label: `나무 카드 ${i + 1}`,
-                src: `output/wood_card_${String(i + 1).padStart(2, '0')}.png`
+                src: `./output/wood_card_${String(i + 1).padStart(2, '0')}.png`
             }))
         };
 
@@ -337,7 +326,7 @@
         // 반응형 스케일링
         function scaleCardToFit() {
             const container = cardWrapper;
-            const card = cardWrapper.querySelector('.card');
+            const cardElem = cardWrapper.querySelector('.card');
 
             const maxWidth = window.innerWidth * 0.95;
             const maxHeight = window.innerHeight * 0.65;
@@ -347,14 +336,11 @@
 
             let scale;
             if (containerRatio > cardRatio) {
-                // 높이 제약
                 scale = maxHeight / 686;
             } else {
-                // 너비 제약
                 scale = maxWidth / 480;
             }
 
-            // 여유를 위해 0.9배
             scale = Math.min(scale, 1) * 0.9;
 
             cardWrapper.style.transform = `scale(${scale})`;
@@ -377,7 +363,7 @@
                 currentCard = allCards[randomIndex];
 
                 // 카드 이미지 업데이트
-                cardFront.style.backgroundImage = `url('./${currentCard.src}')`;
+                cardFront.style.backgroundImage = `url('${currentCard.src}')`;
 
                 // 카드 정보 표시
                 cardLabel.textContent = currentCard.label;
