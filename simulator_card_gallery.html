@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보드게임 카드 갤러리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 24px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        .card-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .card-item:hover {
+            transform: translateY(-8px);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+        }
+
+        .card-item.hidden {
+            display: none;
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 480 / 686;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-label {
+            text-align: center;
+            color: white;
+            margin-top: 8px;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90vw;
+            max-height: 95vh;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .lightbox-image {
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .lightbox-nav {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-wrap: wrap;
+        }
+
+        .lightbox-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .card-counter {
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stats {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🃏 보드게임 카드 갤러리</h1>
+            <p>전체 카드를 둘러보세요</p>
+        </header>
+
+        <div class="tab-controls">
+            <button class="tab-btn active" data-tab="all">전체 보기</button>
+            <button class="tab-btn" data-tab="action">액션 카드</button>
+            <button class="tab-btn" data-tab="wood">나무 카드</button>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+
+        <div class="stats">
+            <p id="stats-text"></p>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightboxImage" alt="확대된 카드">
+            <div class="lightbox-nav">
+                <button class="lightbox-btn" id="prevBtn">← 이전</button>
+                <span class="card-counter"><span id="currentIndex">1</span> / <span id="totalCards">1</span></span>
+                <button class="lightbox-btn" id="nextBtn">다음 →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 카드 데이터
+        const cardData = {
+            action: Array.from({ length: 60 }, (_, i) => ({
+                id: `action_${i}`,
+                type: 'action',
+                label: `액션 카드 ${i + 1}`,
+                src: `output/action_${i}.png`
+            })),
+            wood: Array.from({ length: 13 }, (_, i) => ({
+                id: `wood_${i + 1}`,
+                type: 'wood',
+                label: `나무 카드 ${i + 1}`,
+                src: `output/wood_card_${String(i + 1).padStart(2, '0')}.png`
+            }))
+        };
+
+        const allCards = [...cardData.action, ...cardData.wood];
+        let currentFilter = 'all';
+        let currentLightboxCards = [];
+        let currentLightboxIndex = 0;
+
+        const gallery = document.getElementById('gallery');
+        const lightbox = document.getElementById('lightbox');
+        const closeBtn = document.getElementById('closeBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const currentIndexSpan = document.getElementById('currentIndex');
+        const totalCardsSpan = document.getElementById('totalCards');
+        const statsText = document.getElementById('stats-text');
+
+        // 갤러리 초기화
+        function initGallery() {
+            gallery.innerHTML = '';
+            const cardsToShow = currentFilter === 'all'
+                ? allCards
+                : allCards.filter(card => card.type === currentFilter);
+
+            currentLightboxCards = cardsToShow;
+            totalCardsSpan.textContent = cardsToShow.length;
+
+            cardsToShow.forEach((card, index) => {
+                const item = document.createElement('div');
+                item.className = 'card-item';
+                item.style.animationDelay = `${index * 0.05}s`;
+                item.innerHTML = `
+                    <img class="card-image" src="${card.src}" alt="${card.label}" loading="lazy">
+                    <div class="card-label">${card.label}</div>
+                `;
+                item.addEventListener('click', () => openLightbox(index));
+                gallery.appendChild(item);
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const actionCount = cardData.action.length;
+            const woodCount = cardData.wood.length;
+            statsText.textContent = `총 ${allCards.length}장 (액션 ${actionCount}장 + 나무 ${woodCount}장)`;
+        }
+
+        // Lightbox 함수들
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            updateLightboxImage();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateLightboxImage() {
+            const card = currentLightboxCards[currentLightboxIndex];
+            lightboxImage.src = card.src;
+            currentIndexSpan.textContent = currentLightboxIndex + 1;
+        }
+
+        function prevCard() {
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxCards.length) % currentLightboxCards.length;
+            updateLightboxImage();
+        }
+
+        function nextCard() {
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxCards.length;
+            updateLightboxImage();
+        }
+
+        // 이벤트 리스너
+        closeBtn.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+        prevBtn.addEventListener('click', prevCard);
+        nextBtn.addEventListener('click', nextCard);
+
+        // 키보드 네비게이션
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'ArrowLeft') prevCard();
+            if (e.key === 'ArrowRight') nextCard();
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // 탭 버튼 이벤트
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.tab;
+                initGallery();
+            });
+        });
+
+        // 초기 로드
+        initGallery();
+    </script>
+</body>
+</html>
